@@ -85,6 +85,10 @@ func _physics_process(delta):
 		var temp_up = global_transform.basis.y.lerp(Vector3.UP + (acceleration * banking), delta * 5.0)
 		look_at(global_transform.origin - velocity.normalized(), temp_up)
 	
+	const move_speed := 4.0
+	
+	%PathFollow3D.progress += move_speed * delta
+	
 	move_and_slide()
 	draw_gizmos()
 	
