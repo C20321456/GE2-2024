@@ -23,7 +23,7 @@ func arrive(target_pos:Vector3, slowing:float):
 	var to_target = target_pos - global_position
 	var dist = to_target.length()
 	var ramped = dist / slowing
-	var clamped = min(ramped, slowing)
+	var clamped = min(ramped, slowing) * max_speed
 	var desired = (to_target * clamped) / dist
 	return desired - velocity
 	
