@@ -40,9 +40,16 @@ func seek(target_pos:Vector3):
 	return desired - velocity
 	
 func player():
+	var force = Vector3.ZERO
+	
+	var f = Input.get_axis("Backward", "Forward")
+	
+	var s = Input.get_axis("Left", "Right")
+	
 	return Vector3.ZERO
 	pass	
 func calculate():
+	
 	var force = Vector3.ZERO
 	
 	if seek_enabled:
@@ -54,7 +61,7 @@ func calculate():
 	return force
 	
 func _physics_process(delta):
-	
+
 	force = calculate()
 	acceleration = force / mass
 	
