@@ -1,3 +1,4 @@
+class_name BigBoid
 extends CharacterBody3D
 
 @export var max_speed:float = 10
@@ -15,18 +16,35 @@ extends CharacterBody3D
 @export var arrive_enabled:bool=false
 @export var player_enabled:bool=false
 @export var follow_path:bool=false
+@export var looped:bool=true
+
+@export var flee_enabled:bool=false
+@onready var flee_target:Node3D=get_node("../enemy")
+
+@export var pursue_enabled:bool=false
+@export var pursue_target_path:NodePath
+@onready var pursue_target:Node3D=get_node(pursue_target_path)
+
+@export var offset_pursue_enabled:bool=false
+@export var leader_target_path:NodePath
+@onready var leader_target:Node3D=get_node(pursue_target_path)
+
+var offset:Vector3
 
 @onready var path:Path3D=get_node("../Path3D")
 
 var current:int = 0 
 
 func follow():
-	var target = (path.get_curve().get_point_position(current))
-	
+	var target = path.global_transform * (path.get_curve().get_point_position(current))
+	var len = path.get_curve().get_point_count()
 	var to_target = target - global_position
 	var dist = to_target.length()
 	if dist < 2:
-		current = (current + 1) % path.get_curve().get_point_count()
+		if not looped and current == len - 1:
+			return arrive(target, slowing_distance)
+		else:
+			current = (current + 1) % len
 	return seek(target)
 
 func draw_gizmos():
@@ -39,6 +57,10 @@ var target:Node3D
 func _ready():
 	target = get_node(target_node_path)	
 	
+	if offset_pursue_enabled:
+		offset = global_position - leader_target.global_position
+		
+	
 func arrive(target_pos:Vector3, slowing:float):
 	var to_target = target_pos - global_position
 	var dist = to_target.length()
@@ -47,6 +69,38 @@ func arrive(target_pos:Vector3, slowing:float):
 	var desired = (to_target * clamped) / dist
 	return desired - velocity
 	
+func offset_pursue(leader:BigBoid):
+	var global_target = leader.transform * offset
+	var to_target = global_target - global_position
+	var dist = to_target.length()
+	var t = dist / max_speed
+	
+	var projected = leader.global_position + leader.velocity * t
+	
+	return arrive(projected, 10)
+	
+func pursue(target_boid:BigBoid):
+	var to_target = target_boid.global_position - global_position
+	var dist = to_target.length()
+	
+	var t = dist / max_speed
+	var projected = target_boid.global_position + target_boid.velocity * t
+	
+	DebugDraw3D.draw_arrow(target_boid.global_position, projected, Color.GREEN, 0.1)
+	
+	return seek(projected) 
+	
+func flee(target:Transform3D, flee_distance):
+	var to_target = target.origin - global_position
+	var dist = to_target.length()
+	DebugDraw2D.set_text("dist", dist)
+	if dist < flee_distance:
+		var desired = to_target.normalized() * max_speed
+		DebugDraw3D.draw_arrow(global_position, target.origin, Color.BLUE_VIOLET, 0.1)
+		return velocity - desired
+	else:
+		return Vector3.ZERO
+		
 	
 func seek(target_pos:Vector3):
 	var to_target = target_pos - global_position
@@ -83,6 +137,12 @@ func calculate():
 		force += player()
 	if follow_path:
 		force += follow()
+	if flee_enabled:
+		force += flee(flee_target.global_transform, 5)
+	if pursue_enabled:
+		force += pursue(pursue_target)
+	if offset_pursue_enabled:
+		force += offset_pursue(leader_target)
 	return force
 	
 func _physics_process(delta):
