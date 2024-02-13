@@ -6,6 +6,10 @@
 [ext_resource type="Script" path="res://behaviors/MoveMe.gd" id="3_fk53t"]
 [ext_resource type="Script" path="res://behaviors/SpineAnimator.gd" id="4_fhisk"]
 
+[sub_resource type="PrismMesh" id="PrismMesh_6q73x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_752ur"]
+
 [sub_resource type="Environment" id="Environment_mhj6t"]
 background_mode = 1
 ambient_light_source = 2
@@ -17,10 +21,6 @@ _data = {
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
 }
 point_count = 6
-
-[sub_resource type="PrismMesh" id="PrismMesh_6q73x"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_752ur"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_knd2o"]
 
@@ -76,7 +76,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.6306, 0, 0)
 curve = SubResource("Curve3D_ybie1")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="Path3D"]
-transform = Transform3D(0.087895, 6.85989e-05, 0.996129, -3.63798e-12, 1, -6.88653e-05, -0.99613, 6.05292e-06, 0.0878949, 12.4839, -0.0135498, 17.0064)
+transform = Transform3D(0.0878951, 6.85989e-05, 0.996129, -3.63798e-12, 1, -6.88653e-05, -0.99613, 6.05292e-06, 0.087895, 12.4839, -0.0135498, 17.0064)
 
 [node name="boid" type="CharacterBody3D" parent="Path3D/PathFollow3D"]
 transform = Transform3D(-0.999826, 2.61173e-10, -0.0187704, 1.29263e-06, 1, -6.88532e-05, 0.0187702, -6.88654e-05, -0.999824, -0.0454407, 0.0135232, -0.385783)
